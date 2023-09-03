@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart'; 
 
+//import 'dart:convert';
+
+var logger = Logger();
 void main(){
   runApp(const MyApp());
 }
@@ -24,10 +29,51 @@ class MyHomePage extends StatefulWidget{
 }
 
 class _MyHomePage extends State<MyHomePage>{
+
+  String url="http://10.0.2.2:8000/api/todo/read";
+  List<dynamic> _list=[];
+  bool loading=true;
+
+  @override
+  void initState() {
+    super.initState();
+    getTodos();
+  }
+
+  Future<void> getTodos() async{
+    var res=await http.get(Uri.parse(url));
+     logger.d(res.statusCode);
+    if(res.statusCode==200){
+      //  final parsed = jsonDecode(response.body).cast<Map<String, dynamic>>();
+      // _todos = parsed.map<Todo>((json) => Todo.fromJson(json)).toList();
+      setState(() {
+        loading=false;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
    return Scaffold(
     appBar: AppBar(title: Text(widget.title)),
+    body:loading ? waitingSecreen() : getTodo()
    );
   }
+}
+
+Widget waitingSecreen(){
+  return const  Center(
+    child:  Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+      Text("Loading"),
+      Padding(padding: EdgeInsets.all(15)),
+      CircularProgressIndicator() 
+    ]),
+  );
+}
+
+Widget getTodo(){
+  return const Center(
+    child: Text("Ok Data"),
+  );
 }

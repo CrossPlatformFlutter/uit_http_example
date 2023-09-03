@@ -1,9 +1,3 @@
-
-
-
-
-import 'package:flutter/foundation.dart';
-
 class Todo{
   int id;
   String title;
@@ -25,5 +19,5 @@ class Todo{
        complete: json['complete']
       );
    }
-   
+
 }
