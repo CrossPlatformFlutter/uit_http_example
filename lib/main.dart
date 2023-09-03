@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:logger/logger.dart'; 
+import 'package:logger/logger.dart';
+import 'package:uit_http_example/todos.dart'; 
 
-//import 'dart:convert';
+import 'dart:convert';
 
 var logger = Logger();
 void main(){
@@ -15,7 +18,7 @@ class MyApp extends StatelessWidget{
   Widget build(BuildContext context){
     return const MaterialApp(
       title: "TodoList",
-      home:const MyHomePage(title: "TodoList",),
+      home: MyHomePage(title: "TodoList",),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -42,15 +45,16 @@ class _MyHomePage extends State<MyHomePage>{
 
   Future<void> getTodos() async{
     var res=await http.get(Uri.parse(url));
-     logger.d(res.statusCode);
+    print(res);
     if(res.statusCode==200){
-      //  final parsed = jsonDecode(response.body).cast<Map<String, dynamic>>();
-      // _todos = parsed.map<Todo>((json) => Todo.fromJson(json)).toList();
+        final parsed = jsonDecode(res.body).cast<Map<String, dynamic>>();
+        _list = parsed.map<Todo>((json) => Todo.fromJson(json)).toList();
       setState(() {
         loading=false;
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
    return Scaffold(
