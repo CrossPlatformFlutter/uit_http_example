@@ -2,12 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:logger/logger.dart';
 import 'package:uit_http_example/todos.dart'; 
 
 import 'dart:convert';
 
-var logger = Logger();
 void main(){
   runApp(const MyApp());
 }
@@ -45,7 +43,6 @@ class _MyHomePage extends State<MyHomePage>{
 
   Future<void> getTodos() async{
     var res=await http.get(Uri.parse(url));
-    print(res);
     if(res.statusCode==200){
         final parsed = jsonDecode(res.body).cast<Map<String, dynamic>>();
         _list = parsed.map<Todo>((json) => Todo.fromJson(json)).toList();
