@@ -32,7 +32,7 @@ class MyHomePage extends StatefulWidget{
 class _MyHomePage extends State<MyHomePage>{
 
   String url="http://10.0.2.2:8000/api/todo/read";
-  List<dynamic> _list=[];
+  List<Todo> list=[];
   bool loading=true;
 
   @override
@@ -44,8 +44,11 @@ class _MyHomePage extends State<MyHomePage>{
   Future<void> getTodos() async{
     var res=await http.get(Uri.parse(url));
     if(res.statusCode==200){
-        final parsed = jsonDecode(res.body).cast<Map<String, dynamic>>();
-        _list = parsed.map<Todo>((json) => Todo.fromJson(json)).toList();
+       final data = jsonDecode(res.body);
+       for (var item in data) {
+         list.add(Todo.fromJson(item));
+       }
+       print(list);
       setState(() {
         loading=false;
       });
@@ -56,7 +59,7 @@ class _MyHomePage extends State<MyHomePage>{
   Widget build(BuildContext context) {
    return Scaffold(
     appBar: AppBar(title: Text(widget.title)),
-    body:loading ? waitingSecreen() : getTodo()
+    body:loading ? waitingSecreen() : getTodo(list)
    );
   }
 }
@@ -73,8 +76,20 @@ Widget waitingSecreen(){
   );
 }
 
-Widget getTodo(){
-  return const Center(
-    child: Text("Ok Data"),
+Widget getTodo(List<Todo> todoList) {
+  return GridView.builder(
+    itemCount: todoList.length,
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+    itemBuilder: (context, index) {
+      Todo todo = todoList[index];
+      return Card(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(todo.title),
+          ],
+        ),
+      );
+    },
   );
 }
