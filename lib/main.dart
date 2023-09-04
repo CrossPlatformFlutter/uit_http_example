@@ -1,10 +1,8 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:uit_http_example/todos.dart'; 
-
-import 'dart:convert';
+import 'dart:convert' as convert;
 
 void main(){
   runApp(const MyApp());
@@ -32,39 +30,39 @@ class MyHomePage extends StatefulWidget{
 class _MyHomePage extends State<MyHomePage>{
 
   String url="http://10.0.2.2:8000/api/todo/read";
-  List<Todo> list=[];
-  bool loading=true;
+     List<dynamic> todos=[];
+     bool loading=true;
 
   @override
   void initState() {
-    super.initState();
-    getTodos();
+     super.initState();
+     getTodos();
   }
 
-  Future<void> getTodos() async{
-    var res=await http.get(Uri.parse(url));
-    if(res.statusCode==200){
-       final data = jsonDecode(res.body);
-       for (var item in data) {
-         list.add(Todo.fromJson(item));
-       }
-       print(list);
+Future<void> getTodos() async {
+    final response = await http
+      .get(Uri.parse(url));
+    if (response.statusCode == 200) {
+          final data = convert.jsonDecode(response.body)['data']; 
       setState(() {
-        loading=false;
+          todos = data.map<Todo>((json) => Todo.fromJson(json)).toList();
+          loading=false;
       });
-    }
+  } else {
+    throw Exception('Failed to load Todo');
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
    return Scaffold(
     appBar: AppBar(title: Text(widget.title)),
-    body:loading ? waitingSecreen() : getTodo(list)
+    body:loading ? waitingSecreen() : getTodo()
    );
   }
-}
 
-Widget waitingSecreen(){
+  Widget waitingSecreen(){
   return const  Center(
     child:  Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -76,20 +74,68 @@ Widget waitingSecreen(){
   );
 }
 
-Widget getTodo(List<Todo> todoList) {
-  return GridView.builder(
-    itemCount: todoList.length,
+Widget getTodo() {
+  return  Padding(padding: const EdgeInsets.all(15),child: 
+   GridView.builder(
     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-    itemBuilder: (context, index) {
-      Todo todo = todoList[index];
-      return Card(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+    itemCount: todos.length,
+     itemBuilder: (context,index){
+      Todo todo=todos[index];
+      return  Card(
+         elevation: 3,
+          margin: const EdgeInsets.all(10),
+        child: Padding(
+            padding: const EdgeInsets.all(10),
+            child:Column(crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+               Text(
+          todo.title,
+          style:const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+          const SizedBox(height: 8),
+             Text(
+          todo.description,
+          style: const TextStyle(fontSize: 14),
+        ),
+         const SizedBox(height: 8), 
+            Text(
+          todo.complete ? 'Complete' : 'Incomplete',
+          style: TextStyle(
+            fontSize: 12,
+            color: todo.complete ? Colors.green : Colors.red,
+          ),
+        ),
+         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text(todo.title),
+            ElevatedButton(
+              onPressed: () {
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red
+              ),
+              child:const  Text("Delete"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.yellow
+              ),
+                child:  const Text("Edit"),
+            ),
           ],
         ),
+            ],) 
+            ,)
       );
-    },
-  );
+     })
+     );
 }
+}
+
+
+

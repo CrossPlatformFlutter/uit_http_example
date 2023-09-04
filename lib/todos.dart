@@ -4,7 +4,7 @@ class Todo{
   String description;
   bool complete;
 
-  Todo({
+   Todo({
     required this.id,
     required this.title,
     required this.description,
@@ -16,7 +16,7 @@ class Todo{
        id: json['id'], 
        title: json['title'],
        description: json['description'], 
-       complete: json['complete']
+       complete: json['complete'] == 1,
       );
    }
 
