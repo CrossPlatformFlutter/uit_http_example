@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:uit_http_example/todos.dart'; 
 import 'dart:convert' as convert;
+import 'AddTodo.dart';
 
 void main(){
   runApp(const MyApp());
@@ -12,10 +13,13 @@ class MyApp extends StatelessWidget{
   const MyApp({super.key});
   @override
   Widget build(BuildContext context){
-    return const MaterialApp(
+    return  const MaterialApp(
       title: "TodoList",
-      home: MyHomePage(title: "TodoList",),
+      home:  MyHomePage(title: "TodoList",),
       debugShowCheckedModeBanner: false,
+      routes:<String,WidgetBuilder> {
+       
+      },
     );
   }
 }
@@ -30,7 +34,7 @@ class MyHomePage extends StatefulWidget{
 class _MyHomePage extends State<MyHomePage>{
 
   String url="http://10.0.2.2:8000/api/todo/read";
-     List<dynamic> todos=[];
+     List<Todo> todos=[];
      bool loading=true;
 
   @override
@@ -53,11 +57,21 @@ Future<void> getTodos() async {
   }
 }
 
+  Future<void> navigateAdd ()async {
+      String ?  res=await Navigator.push(context,MaterialPageRoute(builder: (BuildContext context)=>const AddTodo()));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(" $res Todo Added With Success")));
+  }
 
   @override
   Widget build(BuildContext context) {
    return Scaffold(
-    appBar: AppBar(title: Text(widget.title)),
+    appBar: AppBar(
+      title: Text(widget.title),
+      actions:  [
+         ElevatedButton.icon(onPressed: ()async {
+          await navigateAdd();
+         }, icon: const Icon(Icons.add), label:const Text("Add"),style:ElevatedButton.styleFrom(backgroundColor: Colors.blue))
+      ],),
     body:loading ? waitingSecreen() : getTodo()
    );
   }
@@ -86,7 +100,8 @@ Widget getTodo() {
           margin: const EdgeInsets.all(10),
         child: Padding(
             padding: const EdgeInsets.all(10),
-            child:Column(crossAxisAlignment: CrossAxisAlignment.start,
+            child:Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
                Text(
           todo.title,
