@@ -6,8 +6,8 @@ import 'todos.dart';
 import 'dart:convert' as convert;
 
 class AddTodo extends StatefulWidget {
-  const AddTodo({super.key});
-
+  const AddTodo({super.key,});
+  
   @override
   State<AddTodo> createState() => _AddTodoState();
 }

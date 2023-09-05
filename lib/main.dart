@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:uit_http_example/todos.dart'; 
 import 'dart:convert' as convert;
 import 'AddTodo.dart';
+import 'UpdateTodo.dart';
 
 void main(){
   runApp(const MyApp());
@@ -89,6 +90,14 @@ Future<void> DeleteTodo(int id,String todoName) async{
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(" $res Todo Added With Success")));
   }
 
+  Future<void> editTodo(Todo todo) async{
+    String ? res=await Navigator.push(context,MaterialPageRoute(builder: (BuildContext context)=>UpdateTodo(todo: todo)));
+      getTodos();
+      if(res!.length > 2){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(" $res Todo Updated With Success")));
+      }
+  }
+
   @override
   Widget build(BuildContext context) {
    return Scaffold(
@@ -162,7 +171,8 @@ Widget getTodo() {
               child:const  Text("Delete"),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: ()async {
+                await editTodo(todo);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.yellow
@@ -174,7 +184,7 @@ Widget getTodo() {
             ],) 
             ,)
       );
-     }) : Center(
+     }) : const Center(
       child:
        Text("No Data !")
      )
