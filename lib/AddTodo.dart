@@ -112,9 +112,11 @@ class _AddTodoState extends State<AddTodo> {
                   onPressed:(){submit();},
                   child:loading ? const CircularProgressIndicator(color: Colors.white,strokeWidth:2) : const Text("Register") )
               ],
-            ))
+            ),
+            )
           ],
-          ),),
+          ),
+          ),
           )
         ),
     );

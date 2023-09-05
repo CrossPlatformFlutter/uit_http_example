@@ -33,7 +33,7 @@ class MyHomePage extends StatefulWidget{
 
 class _MyHomePage extends State<MyHomePage>{
 
-  String url="http://10.0.2.2:8000/api/todo/read";
+  String url="http://10.0.2.2:8000/api/todo/";
      List<Todo> todos=[];
      bool loading=true;
 
@@ -45,7 +45,7 @@ class _MyHomePage extends State<MyHomePage>{
 
 Future<void> getTodos() async {
     final response = await http
-      .get(Uri.parse(url));
+      .get(Uri.parse(url+"read"));
     if (response.statusCode == 200) {
           final data = convert.jsonDecode(response.body)['data']; 
       setState(() {
@@ -54,6 +54,32 @@ Future<void> getTodos() async {
       });
   } else {
     throw Exception('Failed to load Todo');
+  }
+}
+
+Future<void> DeleteTodo(int id,String todoName) async{
+  String ? res=await showDialog(context: context, builder:(BuildContext context){
+    return AlertDialog(
+      title:  Text("Delete Todo $todoName"),
+      content:const Text("Do You Wanna Delete This"),
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+              ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.red),child: const Text("delete"),onPressed: (){Navigator.of(context).pop("delete");}),
+              ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),child:const Text("Cancel"),onPressed: (){Navigator.of(context).pop("cancel");}),
+          ],
+        
+        )
+      ],
+    );
+  });
+  if(res=="delete"){
+    final res=await http.delete(Uri.parse(url+"delete/$id"));
+    if(res.statusCode==200){
+       getTodos();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Deleted Todo With Success")));
+    }
   }
 }
 
@@ -91,6 +117,7 @@ Future<void> getTodos() async {
 
 Widget getTodo() {
   return  Padding(padding: const EdgeInsets.all(15),child: 
+   todos.length!=0 ? 
    GridView.builder(
     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
     itemCount: todos.length,
@@ -128,8 +155,7 @@ Widget getTodo() {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             ElevatedButton(
-              onPressed: () {
-              },
+              onPressed:(){DeleteTodo(todo.id,todo.title);},
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red
               ),
@@ -148,7 +174,10 @@ Widget getTodo() {
             ],) 
             ,)
       );
-     })
+     }) : Center(
+      child:
+       Text("No Data !")
+     )
      );
 }
 }
