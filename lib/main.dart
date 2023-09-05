@@ -59,6 +59,7 @@ Future<void> getTodos() async {
 
   Future<void> navigateAdd ()async {
       String ?  res=await Navigator.push(context,MaterialPageRoute(builder: (BuildContext context)=>const AddTodo()));
+      getTodos();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(" $res Todo Added With Success")));
   }
 
